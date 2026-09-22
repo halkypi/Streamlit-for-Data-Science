@@ -1,0 +1,46 @@
+[project]
+name = "streamlit-for-data-science"
+version = "0.1.0"
+description = "Teaching examples accompanying Tyler Richards's Streamlit for Data Science"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "altair>=6.3,<7",
+    "matplotlib>=3.11,<4",
+    "numpy>=2.5,<3",
+    "pandas>=3.0,<4",
+    "plotly>=7.1,<8",
+    "pydeck>=0.9,<1",
+    "requests>=2.32,<3",
+    "scikit-learn>=1.9,<2",
+    "seaborn>=0.13,<0.14",
+    "streamlit>=1.64,<2",
+    "streamlit-lottie>=0.0.5,<0.1",
+]
+
+[project.optional-dependencies]
+components = [
+    "bokeh>=3.10,<4",
+    "folium>=0.20,<1",
+    "streamlit-aggrid>=1.2,<2",
+    "streamlit-bokeh>=3.10,<4",
+    "streamlit-folium>=0.27,<1",
+    "streamlit-plotly-events>=0.0.6,<0.1",
+]
+cloud = [
+    "db-dtypes>=1.4,<2",
+    "google-auth>=2.40,<3",
+    "google-cloud-bigquery[pandas]>=3.45,<4",
+]
+nlp = [
+    "openai>=3.17,<4",
+    "torch>=2.14,<3",
+    "transformers>=5.17,<6",
+]
+
+[dependency-groups]
+dev = ["pytest>=9,<10"]
+
+[tool.uv]
+# A collection of teaching scripts, not an installable Python package.
+package = false

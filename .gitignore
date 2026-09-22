@@ -3,8 +3,15 @@
 .direnv
 .direnv/*
 .mypy_cache/*
-*.toml
-trees_app/.streamlit/config.toml
+secrets.toml
+.env
+.env.*
+!.env.example
+.venv/
+.pytest_cache/
+# Streamlit creates environment-specific skill symlinks on launch.
+.agents/skills/developing-with-streamlit
+.claude/skills/developing-with-streamlit
 .DS_Store
 *.mypy_cache/*
 *.mypy_cache
