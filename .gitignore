@@ -18,3 +18,4 @@ secrets.toml
 *__pycache__*
 
 penguin_ml/generated/
+.cortex/
