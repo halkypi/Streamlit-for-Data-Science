@@ -4,6 +4,30 @@ These examples accompany Tyler Richards's *Streamlit for Data Science*. This tou
 
 Run every command below from the repository root after `uv sync`. Stop a server with Ctrl-C before starting another on the same port. The core environment needs no account. Optional extras and isolated environments are introduced only when their lessons need them.
 
+## How this tour maps to the book
+
+This walkthrough is deliberately **not** a chapter-by-chapter rewrite of the book. It keeps Tyler Richards's examples and subject matter, but orders the runnable material by learning dependency: first understand Streamlit's rerun model, then data and charts, then larger apps, components, ML/AI, and services.
+
+Use this map when reading the book alongside the lab:
+
+| Book chapter | Book topic | Walkthrough coverage |
+|---|---|---|
+| 1 | An Introduction to Streamlit | Stops 1–5: first app, widgets, forms, reruns, session state |
+| 2 | Uploading, Downloading, and Manipulating Data | Stops 7, 13, 15: uploads, dataframe validation, safe edited-data download |
+| 3 | Data Visualization | Stops 6–10: native charts, Altair, Plotly, Matplotlib, Seaborn, Bokeh, PyDeck |
+| 4 | Machine Learning and AI with Streamlit | Stops 12 and 18: random forest, Hugging Face, current OpenAI integration |
+| 5 | Deploying with Streamlit Community Cloud | Stop 20 covers deployment preparation and boundaries; no deployment was performed in this modernization |
+| 6 | Beautifying Streamlit Apps | Stops 9, 13, 15: layout, media/UI elements, richer analytical presentation, multipage presentation |
+| 7 | Exploring Streamlit Components | Stops 16–17: AgGrid, Folium, Plotly events, profiling integration |
+| 8 | Deploying with Hugging Face and Heroku | Stop 18 covers Hugging Face model integration; Stop 20 covers deployment considerations. Heroku deployment is not represented by a validated runnable example here |
+| 9 | Connecting to Databases | Stop 19: BigQuery and Snowflake |
+| 10 | Improving Job Applications with Streamlit | Stop 11: the airline job-application exercise |
+| 11 | The Data Project – Prototyping Projects in Streamlit | Stops 10, 13, 15: progressively richer end-to-end data apps |
+| 12 | Streamlit Power Users | The repository does not contain a distinct runnable power-user interview exercise; use the book for that chapter's narrative/interview material |
+
+So the tour matches the book's **scope and progression of ideas**, while intentionally changing the order of some runnable examples to make the learning path cumulative.
+
+
 The execution model to keep tracing is:
 
 **script → render → user interaction → rerun → state/data changes → render again**
