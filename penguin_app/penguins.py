@@ -1,6 +1,5 @@
 import altair as alt
 import pandas as pd
-import seaborn as sns
 import streamlit as st
 
 st.title("Palmer's Penguins")
@@ -15,10 +14,21 @@ selected_y_var = st.selectbox(
     ["bill_depth_mm", "bill_length_mm", "flipper_length_mm", "body_mass_g"],
 )
 
-penguin_file = st.file_uploader("Select Your Local Penguins CSV")
+penguin_file = st.file_uploader("Select Your Local Penguins CSV", type=["csv"])
 if penguin_file is not None:
-    penguins_df = pd.read_csv(penguin_file)
+    try:
+        penguins_df = pd.read_csv(penguin_file)
+    except (pd.errors.ParserError, pd.errors.EmptyDataError, UnicodeDecodeError) as error:
+        st.error(f"Please upload a readable CSV: {error}")
+        st.stop()
+    required = {selected_x_var, selected_y_var, "species"}
+    if not required.issubset(penguins_df.columns):
+        st.error(f"CSV must include: {', '.join(sorted(required))}")
+        st.stop()
+    for column in {selected_x_var, selected_y_var}:
+        penguins_df[column] = pd.to_numeric(penguins_df[column], errors="coerce")
 else:
+    st.info("Upload penguin_app/penguins.csv to start plotting.")
     st.stop()
 
 alt_chart = (
@@ -31,4 +41,4 @@ alt_chart = (
     )
     .interactive()
 )
-st.altair_chart(alt_chart, use_container_width=True)
+st.altair_chart(alt_chart, width="stretch")

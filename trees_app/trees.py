@@ -1,3 +1,7 @@
+from pathlib import Path
+
+DATA_DIR = Path(__file__).resolve().parent
+
 import pandas as pd
 import streamlit as st
 
@@ -6,7 +10,7 @@ st.write(
     "This app analyses trees in San Francisco using"
     " a dataset kindly provided by SF DPW"
 )
-trees_df = pd.read_csv("trees.csv")
+trees_df = pd.read_csv(DATA_DIR / "trees.csv")
 df_dbh_grouped = pd.DataFrame(trees_df.groupby(["dbh"]).count()["tree_id"])
 df_dbh_grouped.columns = ["tree_count"]
 st.line_chart(df_dbh_grouped)

@@ -1,3 +1,7 @@
+from pathlib import Path
+
+DATA_DIR = Path(__file__).resolve().parent
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -13,7 +17,7 @@ st.write(
     in the sidebar!
     """
 )
-trees_df = pd.read_csv("trees.csv")
+trees_df = pd.read_csv(DATA_DIR / "trees.csv")
 today = pd.to_datetime("today")
 trees_df["date"] = pd.to_datetime(trees_df["date"])
 trees_df["age"] = (today - trees_df["date"]).dt.days
@@ -33,7 +37,7 @@ with col1:
         color_discrete_sequence=[graph_color],
     )
     fig.update_xaxes(title_text="Width")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 with col2:
     fig = px.histogram(
@@ -42,4 +46,4 @@ with col2:
         title="Tree Age",
         color_discrete_sequence=[graph_color],
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")

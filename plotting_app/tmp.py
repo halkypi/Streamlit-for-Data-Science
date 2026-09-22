@@ -22,7 +22,7 @@ st.text_area("text area")
 st.date_input("date input")
 st.time_input("time input")
 st.file_uploader("file input")
-st.write("file uploader fails with 404 code")
+
 st.color_picker("color picker")
 text_contents = """This is some text"""
 st.download_button("Download some text", text_contents)
@@ -36,7 +36,7 @@ st.subheader("hello subheader")
 st.caption("hello caption")
 st.code("a = 1234")
 st.text("hello text")
-st.latex("\int a x^2 \,dx")
+st.latex(r"\int a x^2 \,dx")
 """
 hello magic
 """
@@ -61,25 +61,23 @@ map_df = pd.DataFrame(
 )
 
 
-"""
-st.map does not work currently
-"""
+st.map(map_df)
 
-"""
-matplotlib, plotly, bokeh, pydeck, graphviz, and vegalite will be available when we turn on the anaconda packages in q4
-"""
+
 
 st.write("# Media elements")
 image_nums = np.random.randint(255, size=(144, 144), dtype=np.uint8)
 
-st.write("st image does not work currently")
+
 st.image(image_nums)
 
 fs = 44100
 data = np.random.uniform(-1, 1, fs)
-st.audio(data)
+st.audio(data, sample_rate=fs)
 
-st.video(data)
+video_file = st.file_uploader("Upload an MP4 video", type=["mp4"])
+if video_file is not None:
+    st.video(video_file.getvalue())
 st.image(image_nums)
 
 st.write("# layouts and containers")

@@ -1,25 +1,37 @@
+from pathlib import Path
+
+DATA_DIR = Path(__file__).resolve().parent
+
 import pandas as pd
 import requests
 import streamlit as st
 from streamlit_lottie import st_lottie
 
-password_attempt = st.text_input("Please Enter The Password")
+st.caption("Teaching password: example_password (this is not authentication).")
+password_attempt = st.text_input("Please Enter The Password", type="password")
 if password_attempt != "example_password":
     st.write("Incorrect Password!")
     st.stop()
 
 
+@st.cache_data(ttl=3600, max_entries=8)
 def load_lottieurl(url: str):
-    r = requests.get(url)
-    if r.status_code != 200:
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        animation = response.json()
+    except (requests.RequestException, ValueError):
         return None
-    return r.json()
+    return animation if isinstance(animation, dict) and "layers" in animation else None
 
 
 lottie_airplane = load_lottieurl(
     "https://assets4.lottiefiles.com/packages/lf20_jhu1lqdz.json"
 )
-st_lottie(lottie_airplane, speed=1, height=200, key="initial")
+if lottie_airplane is not None:
+    st_lottie(lottie_airplane, speed=1, height=200, key="initial")
+else:
+    st.caption("Optional animation unavailable; the lesson works without it.")
 
 st.title("Major US Airline Job Application")
 st.write("by Tyler Richards")
@@ -37,12 +49,12 @@ the input airport.' There are three steps here:
 4. Return sorted list of airports Distance
 """
 
-airport_distance_df = pd.read_csv("airport_location.csv")
+airport_distance_df = pd.read_csv(DATA_DIR / "airport_location.csv")
 st.write(airport_distance_df)
 
 with st.echo():
     # load necessary data
-    airport_distance_df = pd.read_csv("airport_location.csv")
+    airport_distance_df = pd.read_csv(DATA_DIR / "airport_location.csv")
 
 """
 From some quick googling, I found that the haversine distance is
@@ -53,7 +65,7 @@ and longitudes are in degrees, so I'll make sure to have a way to account
 for that as well. The haversine distance formula is labeled below,
 followed by an implementation in python
 """
-st.image("haversine.png")
+st.image(DATA_DIR / "haversine.png")
 
 with st.echo():
     from math import atan2, cos, radians, sin, sqrt
@@ -127,8 +139,8 @@ def get_distance_list(airport_dataframe,
                       airport_code):
     df = airport_dataframe.copy()
     row = df[df.loc[:, "Airport Code"] == airport_code]
-    lat = row["Lat"]
-    long = row["Long"]
+    lat = row["Lat"].iloc[0]
+    long = row["Long"].iloc[0]
     df = df[df["Airport Code"] != airport_code]
     df["Distance"] = df.apply(
         lambda x: haversine_distance(
@@ -149,8 +161,8 @@ with st.echo():
         row = df[
             df.loc[:, "Airport Code"] == airport_code
         ]  # selects the row from our airport code input
-        lat = row["Lat"]  # get latitude
-        long = row["Long"]  # get longitude
+        lat = row["Lat"].iloc[0]  # get latitude
+        long = row["Long"].iloc[0]  # get longitude
         df = df[
             df["Airport Code"] != airport_code
         ]  # filter out our airport, implement haversine distance
@@ -174,7 +186,8 @@ selected_airport = st.selectbox("Airport Code", airport_distance_df["Airport Cod
 distance_airports = get_distance_list(
     airport_dataframe=airport_distance_df, airport_code=selected_airport
 )
-st.write("Your closest airports in order are {}".format(list(distance_airports)))
+st.write("Your closest airports in order are {}".format(distance_airports["Airport Code"].tolist()))
+st.dataframe(distance_airports[["Airport Code", "Distance"]])
 
 """
 This all seems to work just fine! There are a few ways I would improve this if I was working on
@@ -182,7 +195,7 @@ this for a longer period of time.
 1. I would implement the [Vincenty Distance](https://en.wikipedia.org/wiki/Vincenty%27s_formulae)
 instead of the Haversine distance, which is much more accurate but cumbersome to implement.
 2. I would vectorize this function and make it more efficient overall.
-Because this dataset is only 7 rows long, it wasn't particularly important,
+Because this dataset is only 8 rows long, it wasn't particularly important,
 but if this was a crucial function that was run in production we would want to vectorize it for speed.
 """
 
@@ -227,7 +240,7 @@ example_row = {
     "average_length_of_stay": 5,
     "length_of_search": 4,
 }
-st.write(example_df.append(example_row, ignore_index=True))
+st.write(pd.DataFrame([example_row], columns=example_df.columns))
 """
 For answering the second part of the question, we should take the euclidian distance
 on two normalized vectors. There are two solid options for comparing two

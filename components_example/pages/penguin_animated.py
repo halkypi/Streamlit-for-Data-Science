@@ -1,32 +1,51 @@
+from pathlib import Path
+
+DATA_DIR = Path(__file__).resolve().parents[1]
+
 import pandas as pd
 import plotly.express as px
 import requests
 import streamlit as st
-from pandas_profiling import ProfileReport
+from importlib.util import find_spec
 from streamlit_lottie import st_lottie
-from streamlit_pandas_profiling import st_profile_report
 from streamlit_plotly_events import plotly_events
 
 
+@st.cache_data(ttl=3600, max_entries=8)
 def load_lottieurl(url: str):
-    r = requests.get(url)
-    if r.status_code != 200:
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        animation = response.json()
+    except (requests.RequestException, ValueError):
         return None
-    return r.json()
+    return animation if isinstance(animation, dict) and "layers" in animation else None
 
 
 lottie_penguin = load_lottieurl(
     "https://assets9.lottiefiles.com/private_files/lf30_lntyk83o.json"
 )
 
-st_lottie(lottie_penguin, height=200, speed=1.5)
+if lottie_penguin is not None:
+    st_lottie(lottie_penguin, height=200, speed=1.5)
+else:
+    st.caption("Optional animation unavailable; the lesson works without it.")
 
 st.title("Streamlit Components Example: Penguins")
-df = pd.read_csv("penguins.csv")
+df = pd.read_csv(DATA_DIR / "penguins.csv")
 
 
-fig = px.scatter(df, x="bill_length_mm", y="bill_depth_mm", color="species")
-selected_point = plotly_events(fig, click_event=True)
+fig = px.scatter(df, x="bill_length_mm", y="bill_depth_mm", color="species",
+                 color_discrete_sequence=["#636EFA", "#EF553B", "#00CC96"])
+# This component bundles older Plotly.js, which needs JSON lists, not typed arrays.
+for trace in fig.data:
+    x, y = list(trace.x), list(trace.y)
+    # Clear first: Plotly can otherwise retain an equal NumPy array internally.
+    trace.x = None
+    trace.y = None
+    trace.x = x
+    trace.y = y
+selected_point = plotly_events(fig, click_event=True, key="penguin_click")
 if len(selected_point) == 0:
     st.stop()
 
@@ -42,5 +61,15 @@ st.write(df_selected)
 
 
 st.title("Pandas Profiling of Penguin Dataset")
-penguin_profile = ProfileReport(df, explorative=True)
-st_profile_report(penguin_profile)
+if find_spec("data_profiling") is None:
+    st.info("For the profiling report, run: uv run --project environments/profiling streamlit run components_example/streamlit_app.py")
+else:
+    from data_profiling import ProfileReport
+
+    @st.cache_data(ttl=3600, max_entries=2)
+    def profile_html(data):
+        return ProfileReport(data, explorative=True, progress_bar=False).to_html()
+
+    if st.checkbox("Generate profiling report"):
+        # Only profile the bundled teaching data, never untrusted HTML.
+        st.iframe(profile_html(df), height=700)
