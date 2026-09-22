@@ -1,7 +1,9 @@
 # Streamlit for Data Science
 
 A modern, reproducible teaching lab for Tyler Richards's book. Start with the
-[cumulative walkthrough](walkthrough.md), and consult the
+[cumulative walkthrough](walkthrough.md), which now includes a map back to the
+book's 12-chapter table of contents. The tour follows learning dependencies rather
+than reproducing the chapter order exactly. Consult the
 [app-by-app validation matrix](MODERNIZATION.md) for tested behavior and limits.
 The lab contains 28 Streamlit apps/pages; cloud services and some browser paths
 still have explicit validation limits.
